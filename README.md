@@ -71,7 +71,7 @@ Everything else runs as **VMs and LXC containers on the Proxmox host**:
         │                    │                         │
   ┌─────┴─────┐       ┌──────┴───────┐          ┌──────┴───────┐
   │ Pi 3 B+   │       │ Proxmox host │          │ Pi 5 + 2TB   │
-  │ Pi-hole   │       │ taherProxmox │          │ OpenMediaVault│
+  │ Pi-hole   │       │ hostname     │          │ OpenMediaVault│
   │ (DNS)     │       │              │          │ (NAS / NFS)  │
   └───────────┘       │  VMs + LXCs: │          └──────┬───────┘
                       │  - media VM ─┼─────NFS mount───┘
