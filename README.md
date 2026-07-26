@@ -40,7 +40,7 @@ The exact gear this lab was built with. None of it is required to follow the gui
 
 | Layer | Hardware | Runs |
 |---|---|---|
-| **Hypervisor** | Intel i5 mini-PC, 4 cores / 16GB RAM | Proxmox VE (`taherProxmox`) |
+| **Hypervisor** | Intel i5 mini-PC, 4 cores / 16GB RAM | Proxmox VE (`whatever-you-want`) |
 | **DNS** | Raspberry Pi 3 B+ | Pi-hole (network-wide DNS + ad blocking) |
 | **Storage** | Raspberry Pi 5 (4GB) + 2TB SSD | OpenMediaVault (NAS) |
 
@@ -68,13 +68,13 @@ Everything else runs as **VMs and LXC containers on the Proxmox host**:
                         └────┬────┘
                              │  LAN 10.0.0.0/24
         ┌────────────────────┼────────────────────────┐
-        │                    │                         │
-  ┌─────┴─────┐       ┌──────┴───────┐          ┌──────┴───────┐
+        │                    │                        │
+  ┌─────┴─────┐       ┌──────┴───────┐          ┌─────┴────────┐
   │ Pi 3 B+   │       │ Proxmox host │          │ Pi 5 + 2TB   │
-  │ Pi-hole   │       │ hostname     │          │ OpenMediaVault│
+  │ Pi-hole   │       │ proxmox      │          │OpenMediaVault│
   │ (DNS)     │       │              │          │ (NAS / NFS)  │
   └───────────┘       │  VMs + LXCs: │          └──────┬───────┘
-                      │  - media VM ─┼─────NFS mount───┘
+                      │  - media VM  │─────NFS mount───┘
                       │  - monitoring│
                       │  - homarr    │
                       │  - npm proxy │
