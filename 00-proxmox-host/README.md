@@ -5,7 +5,7 @@ The foundation of the whole lab. One mini-PC runs **Proxmox VE**, and every serv
 ## Hardware
 
 - **Mini-PC:** 4-core Intel i5, 16GB RAM, Intel HD Graphics 630 (handy for Jellyfin hardware transcoding later)
-- **Hostname:** `taherProxmox`
+- **Hostname:** `whatever-you-want`
 - **Network:** wired to the router, gateway `10.0.0.1`, `/24` subnet
 
 Any small x86 box with virtualization support (Intel VT-x / AMD-V) works. 16GB RAM is the practical floor for this many services; 32GB gives real breathing room.
