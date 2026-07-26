@@ -6,7 +6,36 @@ Every guide is written to be **copy-paste friendly**. Anywhere you see a `PLACEH
 
 ---
 
-## What's in my homelab
+## Parts list (what I used)
+
+The exact gear this lab was built with. None of it is required to follow the guides — any equivalents work — but this is the actual bill of materials.
+
+### Compute
+
+| Part | Role |
+|---|---|
+| Intel i5 mini-PC (4 cores / 16GB RAM, HD Graphics 630) | Proxmox host — runs all VMs and LXCs |
+| Raspberry Pi 3 B+ | Pi-hole (network DNS + ad blocking) |
+| Raspberry Pi 5 (4GB) + 2TB SSD | OpenMediaVault NAS (media + downloads storage) |
+
+### Networking, rack & power
+
+| Part | Role |
+|---|---|
+| **NETGEAR GS308** — 8-Port Gigabit Network Switch | Wired backbone for the host, both Pis, and uplink to the router. Unmanaged, silent, plug-and-play. |
+| **GeeekPi DeskPi RackMate 4U Cabinet** (10", DeskPi RackMate T0) | The mini 10-inch rack that houses everything. |
+| **GeeekPi DeskPi RackMate 1U Shelf** (with RJ45 CAT6 + Mini HDMI passthrough) | Rack-mount shelf for the mini-PC and Pis inside the cabinet. |
+| **ANVODE Recessed Desk Power Socket** (2× USB-A, 2× USB-C, 3 outlets, 2m lead) | Hidden in-desk power feed for the rack and peripherals. |
+
+<img width="2992" height="2992" alt="20260726_154245" src="https://github.com/user-attachments/assets/769a3561-6015-4452-8fc3-cdd1a2f609fe" />
+
+<img width="2992" height="2992" alt="20260726_154339" src="https://github.com/user-attachments/assets/8e6d9fd5-4973-4753-a479-14560586b792" />
+
+> Cabling: standard Cat5e/Cat6 patch leads between the switch, the rack shelf's RJ45 port, and each device.
+
+---
+
+## What's in this lab
 
 | Layer | Hardware | Runs |
 |---|---|---|
@@ -83,4 +112,4 @@ Follow the folders in order — each one assumes the previous layers exist.
 
 ## Disclaimer
 
-This is a personal lab. Values like retention, RAM allocations, and image tags are what worked on this hardware — treat them as a starting point, not gospel. Read each guide before pasting, and never commit real secrets to a public repo (use `.env` files kept out of git).
+This is a personal lab. Values like retention, RAM allocations, and image tags are what worked on this hardware — treat them as a starting point, not gospel. Read each guide before pasting, and never commit real secrets to a public repo (use `.env` files kept out of git).![Uploading 20260726_154339.jpg…]()
