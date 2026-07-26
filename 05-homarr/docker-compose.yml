@@ -1,0 +1,21 @@
+# Homarr — dashboard / homepage for the whole lab.
+# Runs on an LXC (1 core / 512MB / 4GB), Docker + nesting enabled.
+# Copy this file, adjust the volume path and TZ, then `docker compose up -d`.
+
+services:
+  homarr:
+    image: ghcr.io/homarr-labs/homarr:latest
+    container_name: homarr
+    restart: unless-stopped
+    volumes:
+      # Persistent app data (boards, integrations, icons).
+      - ${CONFIG_ROOT:-/opt/homarr}/appdata:/appdata
+      # Optional: lets Homarr auto-detect running Docker containers.
+      # Only useful if Homarr can see a Docker socket — safe to remove.
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - TZ=${TZ:-Europe/London}
+      # Generate a 64-char hex secret: `openssl rand -hex 32`
+      - SECRET_ENCRYPTION_KEY=${SECRET_ENCRYPTION_KEY}
+    ports:
+      - 7575:7575

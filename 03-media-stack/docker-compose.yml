@@ -1,0 +1,158 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Media stack — runs on the media VM (2 cores / 6GB / 32GB), Docker + compose.
+#
+# Design:
+#   - gluetun is the VPN tunnel. The download client (and Prowlarr, so indexer
+#     traffic is also hidden) run INSIDE gluetun's network via network_mode.
+#     Their web UIs are published on the gluetun container's ports.
+#   - Jellyfin and the library managers (Sonarr/Radarr/Lidarr/Bazarr/Jellyseerr)
+#     do NOT need the VPN, so they get normal ports.
+#   - Every container shares /mnt/data (the NAS NFS mount) so hardlinks work.
+#
+# COPY THIS FILE, then edit the values in .env (see .env.example). Anything in
+# ${CURLY_BRACES} is pulled from .env — that's where you drop YOUR own config.
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── VPN tunnel ──────────────────────────────────────────────────────────────
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      # Swap these for YOUR provider. See gluetun docs for the exact var names
+      # per provider: https://github.com/qdm12/gluetun-wiki
+      - VPN_SERVICE_PROVIDER=${VPN_PROVIDER}
+      - VPN_TYPE=wireguard                 # or 'openvpn'
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
+      - SERVER_COUNTRIES=${VPN_COUNTRIES}  # e.g. Netherlands
+      - TZ=${TZ}
+    ports:
+      # These are the web UIs of the containers that ride INSIDE gluetun.
+      - 8080:8080     # qbittorrent
+      - 9696:9696     # prowlarr
+    restart: unless-stopped
+
+  # ── Download client (through the VPN) ───────────────────────────────────────
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    network_mode: "service:gluetun"        # ← all traffic goes through gluetun
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=8080
+    volumes:
+      - ${CONFIG_ROOT}/qbittorrent:/config
+      - /mnt/data/torrents:/data/torrents  # downloads land on the NAS
+    depends_on:
+      - gluetun
+    restart: unless-stopped
+
+  # ── Indexer manager (through the VPN) ───────────────────────────────────────
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/prowlarr:/config
+    depends_on:
+      - gluetun
+    restart: unless-stopped
+
+  # ── Library managers (no VPN needed) ────────────────────────────────────────
+  sonarr:                                   # TV
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/sonarr:/config
+      - /mnt/data:/data                     # ← same /data root = hardlinks work
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+  radarr:                                   # Movies
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/radarr:/config
+      - /mnt/data:/data
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  lidarr:                                   # Music
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/lidarr:/config
+      - /mnt/data:/data
+    ports:
+      - 8686:8686
+    restart: unless-stopped
+
+  bazarr:                                   # Subtitles
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/bazarr:/config
+      - /mnt/data/media:/data/media
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+
+  # ── Streaming server ────────────────────────────────────────────────────────
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/jellyfin:/config
+      - /mnt/data/media:/data/media
+    ports:
+      - 8096:8096
+    # Uncomment to enable Intel QuickSync hardware transcoding (HD Graphics 630):
+    # devices:
+    #   - /dev/dri:/dev/dri
+    restart: unless-stopped
+
+  # ── Request front-end ───────────────────────────────────────────────────────
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_ROOT}/jellyseerr:/app/config
+    ports:
+      - 5055:5055
+    restart: unless-stopped

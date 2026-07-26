@@ -1,0 +1,16 @@
+# Nginx Proxy Manager — the lab's front door.
+# Runs on an LXC (1 core / 512MB / 4GB), Docker + nesting enabled.
+# Copy this file, then `docker compose up -d`.
+
+services:
+  npm:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: npm
+    restart: unless-stopped
+    ports:
+      - 80:80       # HTTP (redirects to HTTPS)
+      - 443:443     # HTTPS
+      - 81:81       # NPM admin UI
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
