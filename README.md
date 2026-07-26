@@ -3,6 +3,7 @@
 A complete, reproducible homelab built on a single Proxmox mini-PC, backed by two Raspberry Pis for DNS and storage. This repo documents **exactly** how it was built, service by service, so you can rebuild the same thing (or cherry-pick the parts you want).
 
 Every guide is written to be **copy-paste friendly**. Anywhere you see a `PLACEHOLDER` or a value in `<angle brackets>`, swap in your own. Nothing here assumes secrets — API keys, passwords, VPN creds, and domains are all left as placeholders for you to fill in.
+all ip addresses used are placeholder ip's that you should switch with whatever corresponds with you machines and router.
 
 ---
 
