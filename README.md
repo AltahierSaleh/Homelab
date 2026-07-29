@@ -113,4 +113,4 @@ Follow the folders in order — each one assumes the previous layers exist.
 
 ## Disclaimer
 
-This is a personal lab. Values like retention, RAM allocations, and image tags are what worked on this hardware — treat them as a starting point, not gospel. Read each guide before pasting, and never commit real secrets to a public repo (use `.env` files kept out of git).![Uploading 20260726_154339.jpg…]()
+This is a personal lab. Values like retention, RAM allocations, and image tags are what worked on this hardware — treat them as a starting point, not gospel. Read each guide before pasting, and never commit real secrets to a public repo (use `.env` files kept out of git).
